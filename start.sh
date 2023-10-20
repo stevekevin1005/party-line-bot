@@ -1,6 +1,7 @@
 cd frontend
+rm -rf node_modules
 npm install
-npm run generate
+npm run build
 
 # 確認Nuxt打包是否成功
 if [ $? -ne 0 ]; then
