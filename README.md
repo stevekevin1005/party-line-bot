@@ -13,3 +13,6 @@ To start the server, run the following command:
 ```
 sh start.sh
 ```
+
+## Trello
+https://trello.com/b/N8CqjLTA
