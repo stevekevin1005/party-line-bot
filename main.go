@@ -3,13 +3,16 @@ package main
 import (
 	"os"
 	"party-bot/routes"
+	"party-bot/utils"
 	"path"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	utils.AutoMigrate()
 	r := gin.Default()
+	r.Static("/images", "./images")
 	routes.SetupRoutes(r)
 	r.NoRoute(func(c *gin.Context) {
 		filepath := path.Join("./frontend/dist", c.Request.URL.Path)
@@ -19,5 +22,5 @@ func main() {
 			c.File(filepath)
 		}
 	})
-	r.Run(":8080") // 啟動伺服器在 :8080 port
+	r.Run(":8080")
 }
