@@ -6,12 +6,24 @@ import (
 	"party-bot/utils"
 	"path"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	utils.AutoMigrate()
 	r := gin.Default()
+	r.Use(
+		cors.New(
+			cors.Config{
+				AllowOrigins:     []string{"*"},
+				AllowMethods:     []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
+				AllowHeaders:     []string{"*"},
+				ExposeHeaders:    []string{"*"},
+				AllowCredentials: true,
+			},
+		),
+	)
 	r.Static("/images", "./images")
 	routes.SetupRoutes(r)
 	r.NoRoute(func(c *gin.Context) {
