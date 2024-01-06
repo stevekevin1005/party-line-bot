@@ -24,6 +24,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Images"
+                ],
                 "summary": "List images",
                 "operationId": "list-images",
                 "parameters": [
@@ -61,6 +64,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Images"
                 ],
                 "summary": "Mark an image",
                 "operationId": "mark-image",

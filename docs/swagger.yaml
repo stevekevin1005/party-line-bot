@@ -49,6 +49,8 @@ paths:
           schema:
             $ref: '#/definitions/controller.errorResponse'
       summary: List images
+      tags:
+      - Images
   /api/images/mark:
     post:
       consumes:
@@ -72,4 +74,6 @@ paths:
           schema:
             $ref: '#/definitions/controller.errorResponse'
       summary: Mark an image
+      tags:
+      - Images
 swagger: "2.0"
