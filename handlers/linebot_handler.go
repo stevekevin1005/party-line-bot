@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"party-bot/models"
 	"party-bot/service"
 	"party-bot/utils"
@@ -15,8 +16,8 @@ import (
 // LineBotHandler 處理 Line Bot 訊息的 Handler
 func LineBotHandler(c *gin.Context) {
 	bot, err := linebot.New(
-		"cb6db9b8eaa4f4ea6bb12d8da83ae4ca",
-		"u9HvsHLPqQ6HcsMI7QIEeQKhdTR+98lF+yB+FtGunh3qX8ZPkfn+NBOlyLE12/Znwk/T4Xx0xdPilsBaTwCIlv48kTc44icmfueb7uP6GIIFHSKcw8TusASV+NpPLhQT7YI4eavuIfkdEJtKaeLlaQdB04t89/1O/w1cDnyilFU=",
+		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_ACCESS_TOKEN"),
 	)
 	if err != nil {
 		log.Fatal(err)
