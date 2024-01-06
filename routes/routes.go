@@ -7,15 +7,10 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	r.GET("/api/hello", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Hello from Gin!",
-		})
-	})
+	apiV1Group := r.Group("/api/v1")
 
-	r.GET("/api/images/list", controller.ListImages)
-
-	r.POST("/api/images/mark", controller.MarkImage)
+	apiV1Group.GET("/images/list", controller.ListImages)
+	apiV1Group.POST("/images/mark", controller.MarkImage)
 
 	r.POST("/callback", controller.LineCallback)
 }
