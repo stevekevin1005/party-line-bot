@@ -35,6 +35,7 @@ type markRequest struct {
 // @Success 200 {array} imageResponse
 // @Failure 500 {object} errorResponse
 // @Router /api/images/list [get]
+// @tags Images
 func ListImages(c *gin.Context) {
 	name := c.Query("name")
 	images, err := service.ListImages(name)
@@ -65,6 +66,7 @@ func ListImages(c *gin.Context) {
 // @Success 200
 // @Failure 400 {object} errorResponse "Bad Request"
 // @Router /api/images/mark [post]
+// @tags Images
 func MarkImage(c *gin.Context) {
 	var markRequest markRequest
 	if err := c.BindJSON(&markRequest); err != nil {
