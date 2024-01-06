@@ -2,14 +2,20 @@ package main
 
 import (
 	"os"
+	"party-bot/docs"
 	"party-bot/routes"
 	"party-bot/utils"
 	"path"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title party line bot
+// @version 1.0
+// @description this is a line bot for party usage
 func main() {
 	utils.AutoMigrate()
 	r := gin.Default()
@@ -24,6 +30,8 @@ func main() {
 			},
 		),
 	)
+	docs.SwaggerInfo.BasePath = ""
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Static("/images", "./images")
 	routes.SetupRoutes(r)
 	r.NoRoute(func(c *gin.Context) {

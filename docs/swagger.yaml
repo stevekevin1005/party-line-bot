@@ -1,0 +1,75 @@
+definitions:
+  controller.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  controller.imageResponse:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      path:
+        type: string
+    type: object
+  controller.markRequest:
+    properties:
+      id:
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: this is a line bot for party usage
+  title: party line bot
+  version: "1.0"
+paths:
+  /api/images/list:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of images with optional filtering by name.
+      operationId: list-images
+      parameters:
+      - description: Image name to filter by
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.imageResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: List images
+  /api/images/mark:
+    post:
+      consumes:
+      - application/json
+      description: Mark an image with the specified ID.
+      operationId: mark-image
+      parameters:
+      - description: JSON payload with image ID
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.markRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Mark an image
+swagger: "2.0"
