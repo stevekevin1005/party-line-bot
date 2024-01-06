@@ -16,9 +16,11 @@ import (
 var db *gorm.DB
 
 func init() {
-	loadEnvErr := godotenv.Load()
-	if loadEnvErr != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("ENV") != "prod" {
+		loadEnvErr := godotenv.Load()
+		if loadEnvErr != nil {
+			log.Fatal("Error loading .env file")
+		}
 	}
 	dbUsername := os.Getenv("DB_USERNAME")
 	dbPassword := os.Getenv("DB_PASSWORD")
