@@ -24,7 +24,15 @@ info:
   title: party line bot
   version: "1.0"
 paths:
-  /api/images/list:
+  /api/v1/danmaku/ws:
+    get:
+      description: Get danmaku by websocket
+      operationId: handle-websocket-danmaku
+      responses: {}
+      summary: Get danmaku message
+      tags:
+      - Danmaku
+  /api/v1/images/list:
     get:
       consumes:
       - application/json
@@ -51,7 +59,7 @@ paths:
       summary: List images
       tags:
       - Images
-  /api/images/mark:
+  /api/v1/images/mark:
     post:
       consumes:
       - application/json
