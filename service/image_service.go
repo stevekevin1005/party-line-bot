@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-func SaveImageLocally(content io.Reader, fileName string) string {
+func SaveImageFileLocally(content io.Reader, fileName string) string {
 	// 指定保存的目錄，這裡假設是當前工作目錄的 "images" 子目錄
 	dir := "images"
 
@@ -39,6 +39,15 @@ func SaveImageLocally(content io.Reader, fileName string) string {
 	}
 
 	return filePath
+}
+
+func SaveImage(name string, filePath string) models.Image {
+	newImage := models.Image{
+		Name: name,
+		Path: filePath,
+	}
+	utils.GetDB().Create(&newImage)
+	return newImage
 }
 
 func ListImages(name string) ([]models.Image, error) {

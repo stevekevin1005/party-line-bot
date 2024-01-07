@@ -34,7 +34,7 @@ type markRequest struct {
 // @Param name query string false "Image name to filter by"
 // @Success 200 {array} imageResponse
 // @Failure 500 {object} errorResponse
-// @Router /api/images/list [get]
+// @Router /api/v1/images/list [get]
 // @tags Images
 func ListImages(c *gin.Context) {
 	name := c.Query("name")
@@ -65,7 +65,7 @@ func ListImages(c *gin.Context) {
 // @Param request body markRequest true "JSON payload with image ID"
 // @Success 200
 // @Failure 400 {object} errorResponse "Bad Request"
-// @Router /api/images/mark [post]
+// @Router /api/v1/images/mark [post]
 // @tags Images
 func MarkImage(c *gin.Context) {
 	var markRequest markRequest

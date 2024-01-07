@@ -15,7 +15,18 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/images/list": {
+        "/api/v1/danmaku/ws": {
+            "get": {
+                "description": "Get danmaku by websocket",
+                "tags": [
+                    "Danmaku"
+                ],
+                "summary": "Get danmaku message",
+                "operationId": "handle-websocket-danmaku",
+                "responses": {}
+            }
+        },
+        "/api/v1/images/list": {
             "get": {
                 "description": "Get a list of images with optional filtering by name.",
                 "consumes": [
@@ -56,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/images/mark": {
+        "/api/v1/images/mark": {
             "post": {
                 "description": "Mark an image with the specified ID.",
                 "consumes": [
