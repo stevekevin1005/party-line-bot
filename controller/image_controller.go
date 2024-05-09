@@ -15,9 +15,10 @@ type errorResponse struct {
 
 // imageResponse represents the response format for an image
 type imageResponse struct {
-	ID   uint   `json:"id"`
-	Name string `json:"name"`
-	Path string `json:"path"`
+	ID     uint   `json:"id"`
+	Name   string `json:"name"`
+	Path   string `json:"path"`
+	Serial string `json:"serial"`
 }
 
 // markRequest represents the request payload for marking an image
@@ -47,9 +48,10 @@ func ListImages(c *gin.Context) {
 	var imageResponses []imageResponse
 	for _, img := range images {
 		imageResponses = append(imageResponses, imageResponse{
-			ID:   img.ID,
-			Name: img.Name,
-			Path: img.Path,
+			ID:     img.ID,
+			Name:   img.Name,
+			Path:   img.Path,
+			Serial: img.Serial,
 			// Add other fields as needed
 		})
 	}

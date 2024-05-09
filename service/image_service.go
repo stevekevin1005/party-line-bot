@@ -2,12 +2,15 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
 	"party-bot/models"
 	"party-bot/utils"
 	"path/filepath"
+	"strconv"
+	"strings"
 )
 
 func SaveImageFileLocally(content io.Reader, fileName string) string {
@@ -42,9 +45,29 @@ func SaveImageFileLocally(content io.Reader, fileName string) string {
 }
 
 func SaveImage(name string, filePath string) models.Image {
+	var lastImage models.Image
+	utils.GetDB().Order("id desc").First(&lastImage)
+	var lastNumber = 1
+	var lastChar = "A"
+	if lastImage.Serial != "" {
+		parts := strings.Split(lastImage.Serial, "-")
+		lastChar = parts[0]
+		lastNumber, _ = strconv.Atoi(parts[1])
+	}
+
+	var newNumber int
+	var newSerial string
+	if lastNumber < 18 {
+		newNumber = lastNumber + 1
+		newSerial = fmt.Sprintf("%s-%d", lastChar, newNumber)
+	} else {
+		newSerial = fmt.Sprintf("%s-%d", string(lastChar[0]+1), 1)
+	}
+
 	newImage := models.Image{
-		Name: name,
-		Path: filePath,
+		Name:   name,
+		Path:   filePath,
+		Serial: newSerial,
 	}
 	utils.GetDB().Create(&newImage)
 	return newImage
