@@ -8,5 +8,6 @@ type Image struct {
 	gorm.Model
 	Name   string
 	Path   string
+	Serial string
 	Status bool
 }

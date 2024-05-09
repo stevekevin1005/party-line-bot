@@ -6,13 +6,17 @@ import (
 	"net/http"
 	"os"
 	"party-bot/service"
+	"regexp"
+	"time"
+	"unicode/utf8"
 
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
 )
 
 var (
-	bot *linebot.Client
+	bot   *linebot.Client
+	cache *service.Cache
 )
 
 func init() {
@@ -24,6 +28,7 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	cache = service.NewCache()
 }
 
 // LineBotHandler 處理 Line Bot 訊息的 Handler
@@ -50,9 +55,38 @@ func LineBotHandler(c *gin.Context) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				handleDanmakuMessage(message.Text, userId)
+				if message.Text == "［附上祝福的話］" {
+					cache.Set(userId+"Danmaku", true, 60*time.Second)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						linebot.NewTextMessage("接下來你一分鐘你說的話會被投放在會場螢幕上唷~"),
+					).Do(); err != nil {
+						log.Print(err)
+					}
+				} else if message.Text == " [拍立得列印] " {
+					cache.Set(userId+"Photo", true, 60*time.Second)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						linebot.NewTextMessage("接下來你三分鐘你傳送的照片會被列印成拍立得，請到入口找小幫手領取唷~"),
+					).Do(); err != nil {
+						log.Print(err)
+					}
+				} else {
+					if _, ok := cache.Get(userId + "Danmaku"); ok {
+						handleDanmakuMessage(message.Text, userId, event.ReplyToken)
+						if _, err := bot.ReplyMessage(
+							event.ReplyToken,
+							linebot.NewTextMessage(message.Text),
+						).Do(); err != nil {
+							log.Print(err)
+						}
+						return
+					}
+				}
 			case *linebot.ImageMessage:
-				handleImageMessage(bot, event.ReplyToken, message, userId)
+				if _, ok := cache.Get(userId + "Photo"); ok {
+					handleImageMessage(bot, event.ReplyToken, message, userId)
+				}
 			}
 		}
 	}
@@ -89,14 +123,13 @@ func handleImageMessage(bot *linebot.Client, replyToken string, message *linebot
 	// 回覆用戶
 	if _, err := bot.ReplyMessage(
 		replyToken,
-		linebot.NewTextMessage(fmt.Sprintf("已收到您的圖片，您的照片序號是：%d", newImage.ID)),
+		linebot.NewTextMessage(fmt.Sprintf("已收到您的圖片，您的照片序號是：%s", newImage.Serial)),
 	).Do(); err != nil {
 		log.Print(err)
 	}
 }
 
-func handleDanmakuMessage(message string, userId string) {
-	// 在這裡你可以對本地保存的圖片進行進一步的處理
+func handleDanmakuMessage(message string, userId string, replyToken string) {
 	senderProfile, err := bot.GetProfile(userId).Do()
 	if err != nil {
 		log.Printf("Error getting sender's profile: %v", err)
@@ -104,6 +137,16 @@ func handleDanmakuMessage(message string, userId string) {
 		return
 	}
 	senderName := senderProfile.DisplayName
+	regex := regexp.MustCompile(`^[\p{Han}\p{Katakana}\p{Hiragana}\p{Hangul}a-zA-Z0-9\s]+$`)
+	if !regex.MatchString(message) || utf8.RuneCountInString(message) > 20 {
+		if _, err := bot.ReplyMessage(
+			replyToken,
+			linebot.NewTextMessage("只能傳20個以內的訊息唷~"),
+		).Do(); err != nil {
+			log.Print(err)
+		}
+		return
+	}
 	BroadcastMessage(message)
 	service.SaveMessage(message, senderName)
 }
