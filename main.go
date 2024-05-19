@@ -13,6 +13,17 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+func imagesHeaderMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.URL.Path == "/images" || len(c.Request.URL.Path) > 7 && c.Request.URL.Path[:8] == "/images/" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+			c.Writer.Header().Set("Access-Control-Allow-Methods", "GET")
+			// Add other headers if needed
+		}
+		c.Next()
+	}
+}
+
 // @title party line bot
 // @version 1.0
 // @description this is a line bot for party usage
@@ -32,7 +43,11 @@ func main() {
 	)
 	docs.SwaggerInfo.BasePath = ""
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Static("/images", "./images")
+
+	imagesGroup := r.Group("/images")
+	imagesGroup.Use(imagesHeaderMiddleware())
+	imagesGroup.Static("/", "./images")
+
 	routes.SetupRoutes(r)
 	r.NoRoute(func(c *gin.Context) {
 		filepath := path.Join("./frontend/dist", c.Request.URL.Path)
