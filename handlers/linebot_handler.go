@@ -55,11 +55,11 @@ func LineBotHandler(c *gin.Context) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if message.Text == "［附上祝福的話］" {
+				if message.Text == "［愛的留言］" {
 					cache.Set(userId+"Danmaku", true, 60*time.Second)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
-						linebot.NewTextMessage("接下來你一分鐘你說的話會被投放在會場螢幕上唷~"),
+						linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將您想告訴新人的話傳給我～\n\n愛的留言就會投射至大螢幕\n～趕快留言給新人吧(๑ ◡ ๑)"),
 					).Do(); err != nil {
 						log.Print(err)
 					}
@@ -67,7 +67,7 @@ func LineBotHandler(c *gin.Context) {
 					cache.Set(userId+"Photo", true, 60*time.Second)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
-						linebot.NewTextMessage("接下來你三分鐘你傳送的照片會被列印成拍立得，請到入口找小幫手領取唷~"),
+						linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以到入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧~"),
 					).Do(); err != nil {
 						log.Print(err)
 					}
