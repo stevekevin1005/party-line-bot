@@ -74,12 +74,12 @@ func LineBotHandler(c *gin.Context) {
 				} else {
 					if _, ok := cache.Get(userId + "Danmaku"); ok {
 						handleDanmakuMessage(message.Text, userId, event.ReplyToken)
-						if _, err := bot.ReplyMessage(
-							event.ReplyToken,
-							linebot.NewTextMessage(message.Text),
-						).Do(); err != nil {
-							log.Print(err)
-						}
+						// if _, err := bot.ReplyMessage(
+						// 	event.ReplyToken,
+						// 	linebot.NewTextMessage(message.Text),
+						// ).Do(); err != nil {
+						// 	log.Print(err)
+						// }
 						return
 					}
 				}
