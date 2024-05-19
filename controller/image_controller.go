@@ -19,6 +19,7 @@ type imageResponse struct {
 	Name   string `json:"name"`
 	Path   string `json:"path"`
 	Serial string `json:"serial"`
+	Status bool   `json:"status"`
 }
 
 // markRequest represents the request payload for marking an image
@@ -52,6 +53,7 @@ func ListImages(c *gin.Context) {
 			Name:   img.Name,
 			Path:   img.Path,
 			Serial: img.Serial,
+			Status: img.Status,
 			// Add other fields as needed
 		})
 	}
