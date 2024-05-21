@@ -64,7 +64,7 @@ func LineBotHandler(c *gin.Context) {
 						log.Print(err)
 					}
 				} else if message.Text == " [拍立得列印] " {
-					cache.Set(userId+"Photo", true, 60*time.Second)
+					cache.Set(userId+"Photo", true, 300*time.Second)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
 						linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以到入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧~"),
