@@ -71,7 +71,7 @@ func LineBotHandler(c *gin.Context) {
 					).Do(); err != nil {
 						log.Print(err)
 					}
-				} else if message.Text == " [座位查詢] " {
+				} else if message.Text == "［座位查詢］" {
 					cache.Set(userId+"findTable", true, 300*time.Second)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
