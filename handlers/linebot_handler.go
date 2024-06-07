@@ -168,7 +168,7 @@ func handleFindTable(name string, replyToken string) {
 	table, _ := service.FindTable(name)
 	if _, err := bot.ReplyMessage(
 		replyToken,
-		linebot.NewTextMessage("您的座位是: "+table.Name),
+		linebot.NewTextMessage("您的座位是: "+table.TableName),
 	).Do(); err != nil {
 		log.Print(err)
 	}

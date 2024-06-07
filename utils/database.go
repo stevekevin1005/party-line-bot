@@ -45,7 +45,7 @@ func init() {
 }
 
 func AutoMigrate() {
-	err := db.AutoMigrate(&models.User{}, &models.Image{}, &models.Message{})
+	err := db.AutoMigrate(&models.User{}, &models.Image{}, &models.Message{}, &models.Table{})
 	if err != nil {
 		log.Fatal(err)
 	}
