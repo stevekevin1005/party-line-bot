@@ -71,7 +71,20 @@ func LineBotHandler(c *gin.Context) {
 					).Do(); err != nil {
 						log.Print(err)
 					}
+				} else if message.Text == " [座位查詢] " {
+					cache.Set(userId+"findTable", true, 300*time.Second)
+					if _, err := bot.ReplyMessage(
+						event.ReplyToken,
+						linebot.NewTextMessage("請輸入您的姓名，我會為您查詢您的座位。"),
+					).Do(); err != nil {
+						log.Print(err)
+					}
 				} else {
+					if _, ok := cache.Get(userId + "findTable"); ok {
+						handleFindTable(message.Text, event.ReplyToken)
+						cache.Delete(userId + "findTable")
+						return
+					}
 					if _, ok := cache.Get(userId + "Danmaku"); ok {
 						handleDanmakuMessage(message.Text, userId, event.ReplyToken)
 						// if _, err := bot.ReplyMessage(
@@ -149,4 +162,14 @@ func handleDanmakuMessage(message string, userId string, replyToken string) {
 	}
 	BroadcastMessage(message)
 	service.SaveMessage(message, senderName)
+}
+
+func handleFindTable(name string, replyToken string) {
+	table, _ := service.FindTable(name)
+	if _, err := bot.ReplyMessage(
+		replyToken,
+		linebot.NewTextMessage("您的座位是: "+table.Name),
+	).Do(); err != nil {
+		log.Print(err)
+	}
 }
