@@ -67,12 +67,22 @@ func LineBotHandler(c *gin.Context) {
 						log.Print(err)
 					}
 				} else if message.Text == " [拍立得列印] " {
-					cache.Set(userId+"Photo", true, 300*time.Second)
-					if _, err := bot.ReplyMessage(
-						event.ReplyToken,
-						linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以到入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧~"),
-					).Do(); err != nil {
-						log.Print(err)
+					var imageCount, _ = service.CountImages()
+					if imageCount >= 200 {
+						if _, err := bot.ReplyMessage(
+							event.ReplyToken,
+							linebot.NewTextMessage("WOW（*＾-＾*）太搶手了！\n拍立得~已經全數印完囉！\n謝謝你們大家的喜愛 ♡"),
+						).Do(); err != nil {
+							log.Print(err)
+						}
+					} else {
+						cache.Set(userId+"Photo", true, 300*time.Second)
+						if _, err := bot.ReplyMessage(
+							event.ReplyToken,
+							linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以到入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧~"),
+						).Do(); err != nil {
+							log.Print(err)
+						}
 					}
 				} else if message.Text == "［座位查詢］" {
 					senderProfile, err := bot.GetProfile(userId).Do()
@@ -96,7 +106,7 @@ func LineBotHandler(c *gin.Context) {
 					} else {
 						if _, err := bot.ReplyMessage(
 							event.ReplyToken,
-							linebot.NewTextMessage("您的桌位是： "+table.Name),
+							linebot.NewTextMessage("您的桌位是： "+table.TableName),
 						).Do(); err != nil {
 							log.Print(err)
 						}
@@ -124,7 +134,22 @@ func LineBotHandler(c *gin.Context) {
 }
 
 func handleImageMessage(bot *linebot.Client, replyToken string, message *linebot.ImageMessage, userId string) {
-
+	senderProfile, err := bot.GetProfile(userId).Do()
+	if err != nil {
+		log.Printf("Error getting sender's profile: %v", err)
+		// 錯誤處理...
+		return
+	}
+	senderName := senderProfile.DisplayName
+	images, _ := service.ListImages(senderName)
+	if len(images) >= 3 {
+		if _, err := bot.ReplyMessage(
+			replyToken,
+			linebot.NewTextMessage("Oopsヾ(≧O≦)〃 拍立得數量有限! 1人只能上傳3張喔～"),
+		).Do(); err != nil {
+			log.Print(err)
+		}
+	}
 	// 下載圖片
 	content, err := bot.GetMessageContent(message.ID).Do()
 	if err != nil {
@@ -141,13 +166,7 @@ func handleImageMessage(bot *linebot.Client, replyToken string, message *linebot
 	}
 
 	// 在這裡你可以對本地保存的圖片進行進一步的處理
-	senderProfile, err := bot.GetProfile(userId).Do()
-	if err != nil {
-		log.Printf("Error getting sender's profile: %v", err)
-		// 錯誤處理...
-		return
-	}
-	senderName := senderProfile.DisplayName
+
 	newImage := service.SaveImage(senderName, filePath)
 	// 回覆用戶
 	if _, err := bot.ReplyMessage(

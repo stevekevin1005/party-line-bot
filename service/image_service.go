@@ -80,10 +80,18 @@ func ListImages(name string) ([]models.Image, error) {
 		db = db.Where("name Like ?", "%"+name+"%")
 	}
 	if err := db.Find(&images).Error; err != nil {
-
 		return nil, err
 	}
 	return images, nil
+}
+
+func CountImages() (int64, error) {
+	var count int64
+	db := utils.GetDB()
+	if err := db.Model(&models.Image{}).Count(&count).Error; err != nil {
+		return 0, err
+	}
+	return count, nil
 }
 
 func MarkImage(id int) error {
