@@ -9,7 +9,7 @@ func FindTable(name string) (models.Table, error) {
 	var table models.Table
 	db := utils.GetDB()
 	if name != "" {
-		db = db.Where("name Like ?", "%"+name+"%")
+		db = db.Where("name = ?", name)
 	}
 	if err := db.First(&table).Error; err != nil {
 		return table, err
