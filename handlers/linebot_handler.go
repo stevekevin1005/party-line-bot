@@ -10,8 +10,11 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"errors"
+
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+	"gorm.io/gorm"
 )
 
 var (
@@ -72,12 +75,31 @@ func LineBotHandler(c *gin.Context) {
 						log.Print(err)
 					}
 				} else if message.Text == "［座位查詢］" {
-					cache.Set(userId+"findTable", true, 300*time.Second)
-					if _, err := bot.ReplyMessage(
-						event.ReplyToken,
-						linebot.NewTextMessage("請輸入您的姓名，我會為您查詢您的座位。"),
-					).Do(); err != nil {
-						log.Print(err)
+					senderProfile, err := bot.GetProfile(userId).Do()
+					if err != nil {
+						log.Printf("Error getting sender's profile: %v", err)
+						// 錯誤處理...
+						return
+					}
+					senderName := senderProfile.DisplayName
+					table, err := service.FindTable(senderName)
+					if err != nil {
+						if errors.Is(err, gorm.ErrRecordNotFound) {
+							cache.Set(userId+"findTable", true, 300*time.Second)
+							if _, err := bot.ReplyMessage(
+								event.ReplyToken,
+								linebot.NewTextMessage("感謝您使用此功能：\n請在此輸入「您的名字」\n將會告知您的桌位"),
+							).Do(); err != nil {
+								log.Print(err)
+							}
+						}
+					} else {
+						if _, err := bot.ReplyMessage(
+							event.ReplyToken,
+							linebot.NewTextMessage("您的桌位是： "+table.Name),
+						).Do(); err != nil {
+							log.Print(err)
+						}
 					}
 				} else {
 					if _, ok := cache.Get(userId + "findTable"); ok {
@@ -87,12 +109,6 @@ func LineBotHandler(c *gin.Context) {
 					}
 					if _, ok := cache.Get(userId + "Danmaku"); ok {
 						handleDanmakuMessage(message.Text, userId, event.ReplyToken)
-						// if _, err := bot.ReplyMessage(
-						// 	event.ReplyToken,
-						// 	linebot.NewTextMessage(message.Text),
-						// ).Do(); err != nil {
-						// 	log.Print(err)
-						// }
 						return
 					}
 				}
@@ -165,11 +181,20 @@ func handleDanmakuMessage(message string, userId string, replyToken string) {
 }
 
 func handleFindTable(name string, replyToken string) {
-	table, _ := service.FindTable(name)
-	if _, err := bot.ReplyMessage(
-		replyToken,
-		linebot.NewTextMessage("您的座位是: "+table.TableName),
-	).Do(); err != nil {
-		log.Print(err)
+	table, err := service.FindTable(name)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		if _, err := bot.ReplyMessage(
+			replyToken,
+			linebot.NewTextMessage("不好意思(*꧆▽꧆*)\n未查詢到您得名字，請您至婚宴入口處詢問招待呦！"),
+		).Do(); err != nil {
+			log.Print(err)
+		}
+	} else {
+		if _, err := bot.ReplyMessage(
+			replyToken,
+			linebot.NewTextMessage("您的座位是: "+table.TableName),
+		).Do(); err != nil {
+			log.Print(err)
+		}
 	}
 }
