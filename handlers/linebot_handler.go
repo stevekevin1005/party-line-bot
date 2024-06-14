@@ -58,7 +58,9 @@ func LineBotHandler(c *gin.Context) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				if message.Text == "［愛的留言］" {
+				if message.Text == "電子喜帖" || message.Text == "婚宴交通" || message.Text == "停車資訊" {
+					return
+				} else if message.Text == "［愛的留言］" {
 					cache.Set(userId+"Danmaku", true, 60*time.Second)
 					if _, err := bot.ReplyMessage(
 						event.ReplyToken,
@@ -142,10 +144,10 @@ func handleImageMessage(bot *linebot.Client, replyToken string, message *linebot
 	}
 	senderName := senderProfile.DisplayName
 	images, _ := service.ListImages(senderName)
-	if len(images) >= 3 {
+	if len(images) >= 2 {
 		if _, err := bot.ReplyMessage(
 			replyToken,
-			linebot.NewTextMessage("Oopsヾ(≧O≦)〃 拍立得數量有限! 1人只能上傳3張喔～"),
+			linebot.NewTextMessage("Oopsヾ(≧O≦)〃 拍立得數量有限! 1人只能上傳2張喔～"),
 		).Do(); err != nil {
 			log.Print(err)
 		}
