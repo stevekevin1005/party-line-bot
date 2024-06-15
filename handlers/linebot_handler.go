@@ -81,7 +81,7 @@ func LineBotHandler(c *gin.Context) {
 						cache.Set(userId+"Photo", true, 300*time.Second)
 						if _, err := bot.ReplyMessage(
 							event.ReplyToken,
-							linebot.NewTextMessage("感謝您使用此功能：\n請在接下來的5分鐘內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以到入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧~"),
+							linebot.NewTextMessage("感謝您使用此功能：\n拍立得列印：18:00-20:00\n每人可列印 2張照片呦 ♡\n請在開放列印的時間內，將希望列印的照片上傳給我～\n數量有限，印完為止，可以依照片序號至入口處看看您的照片有沒有印出來唷(๑•̀ㅂ•́)و✧"),
 						).Do(); err != nil {
 							log.Print(err)
 						}
